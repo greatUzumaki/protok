@@ -1,3 +1,26 @@
 html {
   scroll-behavior: smooth;
 }
+
+.MuiRadio-colorSecondary.Mui-checked {
+  color: #ffffff !important;
+}
+
+.MuiRadio-root {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.MuiFormControl-root.MuiTextField-root,
+.MuiSelect-root {
+  box-shadow: inset 0px 0px 5px 0px rgba(0, 0, 0, 0.6);
+}
+
+.MuiInputBase-root {
+  border-radius: 2px !important;
+  font-weight: 600 !important;
+}
+
+.MuiInputBase-root input {
+  border-radius: 2px !important;
+  text-align: center !important;
+}

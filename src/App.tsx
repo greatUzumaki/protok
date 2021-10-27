@@ -1,25 +1,44 @@
+import { createTheme, ThemeProvider, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { Calc } from './Components/Calc';
+import { Title } from './Components/Title';
+
+const useStyles = makeStyles(() => ({
+  root: {
+    height: '150vh',
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  second: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+}));
+
+const theme = createTheme({
+  typography: {
+    fontFamily: ['Montserrat', 'sans-serif'].join(','),
+  },
+});
 
 function App() {
+  const classes = useStyles();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <div className={classes.root}>
+        <Title />
+        <div className={classes.second} id='calc'>
+          <Calc />
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }
 

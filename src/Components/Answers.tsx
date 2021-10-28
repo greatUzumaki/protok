@@ -2,6 +2,7 @@ import {
   FormControl,
   FormControlLabel,
   InputAdornment,
+  InputLabel,
   MenuItem,
   Radio,
   RadioGroup,
@@ -25,7 +26,7 @@ const useStyles = makeStyles(() => ({
     width: 450,
     '& .MuiOutlinedInput-root': {
       '&.Mui-focused fieldset': {
-        border: 1,
+        border: 0,
       },
     },
     '@media (max-width: 800px)': {
@@ -36,7 +37,7 @@ const useStyles = makeStyles(() => ({
     width: 130,
     '& .MuiOutlinedInput-root': {
       '&.Mui-focused fieldset': {
-        border: 1,
+        border: 0,
       },
     },
   },
@@ -46,6 +47,12 @@ const useStyles = makeStyles(() => ({
     '@media (max-width: 800px)': {
       width: 300,
     },
+  },
+  cont: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 20,
   },
 }));
 
@@ -68,37 +75,47 @@ const RadioAnsw = (props: IAnsw) => {
   };
 
   return props.answ.answers && props.answ.answers?.length > 4 ? (
-    <FormControl fullWidth>
-      <Select
-        value={value}
-        onChange={handleChangeSelect}
-        className={classes.select}
-        variant='outlined'
-      >
-        {props.answ.answers.map((answ) => {
-          return <MenuItem value={answ}>{answ}</MenuItem>;
-        })}
-      </Select>
-    </FormControl>
+    <div className={classes.cont}>
+      <FormControl fullWidth style={{ alignItems: 'center' }}>
+        <Select
+          value={value}
+          onChange={handleChangeSelect}
+          className={classes.select}
+          variant='outlined'
+        >
+          {props.answ.answers.map((answ) => {
+            return <MenuItem value={answ}>{answ}</MenuItem>;
+          })}
+        </Select>
+      </FormControl>
+      {value === 'Другое' && (
+        <TextField variant='outlined' className={classes.text} />
+      )}
+    </div>
   ) : (
-    <FormControl component='fieldset'>
-      <RadioGroup
-        name={props.answ.title}
-        className={classes.radioContainer}
-        value={value}
-        onChange={handleChange}
-      >
-        {props.answ.answers?.map((answ) => (
-          <FormControlLabel
-            className={classes.radio}
-            value={answ}
-            control={<Radio />}
-            label={answ}
-            labelPlacement='top'
-          />
-        ))}
-      </RadioGroup>
-    </FormControl>
+    <div className={classes.cont}>
+      <FormControl component='fieldset'>
+        <RadioGroup
+          name={props.answ.title}
+          className={classes.radioContainer}
+          value={value}
+          onChange={handleChange}
+        >
+          {props.answ.answers?.map((answ) => (
+            <FormControlLabel
+              className={classes.radio}
+              value={answ}
+              control={<Radio />}
+              label={answ}
+              labelPlacement='top'
+            />
+          ))}
+        </RadioGroup>
+      </FormControl>
+      {value === 'Другое' && (
+        <TextField variant='outlined' className={classes.text} />
+      )}
+    </div>
   );
 };
 

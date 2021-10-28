@@ -7,7 +7,7 @@ import { Title } from './Components/Title';
 
 const useStyles = makeStyles(() => ({
   root: {
-    height: '150vh',
+    MinHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',

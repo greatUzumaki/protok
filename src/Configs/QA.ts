@@ -1,6 +1,6 @@
 export type Iqa = {
   title: string;
-  answers?: string[];
+  answers: string[];
   type: 'number' | 'field' | 'radio';
   label?: string;
 };
@@ -8,12 +8,12 @@ export type Iqa = {
 export const questionAnswer: Iqa[] = [
   {
     title: 'Выберите тип КТП из предложенных…',
-    answers: [
-      'Киосковая тупиковая (КТП/Т)',
-      'Киосковая  проходная (КТП/П)',
-      'Тупиковая утепленная типа «сэндвич»',
-      'Проходная утепленная типа «сэндвич»',
-    ],
+    answers: ['Тупиковая (КТП/Т)', 'Проходная (КТП/П)'],
+    type: 'radio',
+  },
+  {
+    title: 'Выберите Тип утепления КТП…',
+    answers: ['Киосковая', 'Утепленная типа "сэндвич"'],
     type: 'radio',
   },
   {
@@ -78,6 +78,7 @@ export const questionAnswer: Iqa[] = [
   {
     title:
       'Просим Вас выбрать марку коммутационных аппаратов отходящих линий НН',
+    answers: [''],
     type: 'field',
   },
   {

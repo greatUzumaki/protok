@@ -2,11 +2,18 @@ import {
   Box,
   Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   makeStyles,
+  TextField,
   Typography,
 } from '@material-ui/core';
-import { ArrowBack, ArrowForward } from '@material-ui/icons';
+import * as FileSaver from 'file-saver';
 import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
 import { secondColor } from '../Configs/Colors';
 import { questionAnswer } from '../Configs/QA';
 import { Answers } from './Answers';
@@ -59,6 +66,15 @@ const useStyles = makeStyles(() => ({
     width: 300,
     height: 50,
   },
+  button2: {
+    fontWeight: 600,
+    border: 'solid 2px',
+    borderRadius: 2,
+    letterSpacing: 1,
+    marginTop: 30,
+    width: 150,
+    height: 40,
+  },
   buttonContainer: {
     justifyContent: 'center',
     display: 'flex',
@@ -86,6 +102,8 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'space-evenly',
     gap: 40,
     padding: 40,
+    marginTop: 50,
+    marginBottom: 50,
   },
   desc: {
     fontWeight: 500,
@@ -107,51 +125,92 @@ const useStyles = makeStyles(() => ({
       fontSize: 15,
     },
   },
+  buttons: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  field: {
+    width: '100%',
+    marginBottom: 20,
+  },
 }));
 
+interface IDialogMy {
+  open: boolean;
+  setClose: Function;
+}
+
+const DialogMy = (props: IDialogMy) => {
+  const classes = useStyles();
+
+  return (
+    <Dialog open={props.open} onClose={() => props.setClose(false)}>
+      <DialogTitle>Отправка данных формы</DialogTitle>
+      <DialogContent>
+        <TextField className={classes.field} placeholder='Название компании' />
+        <TextField className={classes.field} placeholder='Контакты для связи' />
+      </DialogContent>
+      <DialogActions>
+        <Button
+          className={classes.button2}
+          onClick={() => props.setClose(false)}
+          color='primary'
+        >
+          Отмена
+        </Button>
+        <Button
+          className={classes.button2}
+          onClick={() => props.setClose(false)}
+          color='primary'
+          autoFocus
+        >
+          Отправить
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 export const Calc = () => {
-  const [currentQ, setCurrentQ] = useState(0);
   const [finish, setFinish] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const classes = useStyles();
 
-  const maxQuestions = questionAnswer.length;
+  const [userValues, setUserValues] = React.useState<string[]>([]);
 
-  const userValues: any = [
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-  ];
+  const repeat = () => setFinish(false);
 
-  const repeat = () => {
-    setFinish(false);
-    setCurrentQ(0);
+  const setUserValue = (value: string, index: number) => {
+    setUserValues((old) => {
+      const newArray = [...old];
+      newArray[index] = value;
+      return newArray;
+    });
+  };
+
+  const exportToExcel = () => {
+    const newArr: string[][] = questionAnswer.map((item, i) => [
+      item.title,
+      userValues[i],
+    ]);
+    const fileType =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    const fileName = 'calculateKTP';
+
+    const wb = XLSX.utils.book_new();
+    wb.Props = {
+      Title: 'CalculateKTP',
+      Subject: 'КТП',
+    };
+    wb.SheetNames.push('КТП');
+    const ws = XLSX.utils.aoa_to_sheet(newArr);
+    wb.Sheets['КТП'] = ws;
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(data, fileName + fileExtension);
   };
 
   return finish ? (
@@ -165,9 +224,18 @@ export const Calc = () => {
             Формируем проект, в ближайшее время с Вами свяжется наш менеджер
           </Typography>
         </Box>
-        <Button className={classes.button} onClick={repeat}>
-          Заполнить заного
-        </Button>
+        <Box className={classes.buttons}>
+          <Button className={classes.button} onClick={repeat}>
+            Заполнить заного
+          </Button>
+          <Button className={classes.button} onClick={exportToExcel}>
+            Скачать документ
+          </Button>
+          <Button className={classes.button} onClick={() => setOpen(true)}>
+            Отправить данные
+          </Button>
+        </Box>
+        <DialogMy open={open} setClose={setOpen} />
       </div>
     </Container>
   ) : (
@@ -180,13 +248,24 @@ export const Calc = () => {
               <Typography className={classes.count}>{index + 1}</Typography>
             </Box>
             <Box className={classes.container}>
-              <Answers answ={qa} id={index} userValues={userValues} />
+              <Answers
+                answ={qa}
+                id={index}
+                userValue={userValues[index]}
+                setVal={(value) => setUserValue(value, index)}
+              />
             </Box>
           </div>
         );
       })}
       <Box className={classes.buttonContainer}>
-        <Button className={classes.button}>Завершить опрос</Button>
+        <Button
+          className={classes.button}
+          onClick={() => setFinish(true)}
+          disabled={userValues.length !== questionAnswer.length}
+        >
+          Завершить опрос
+        </Button>
       </Box>
     </Container>
   );

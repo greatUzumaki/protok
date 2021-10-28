@@ -2,7 +2,6 @@ import {
   FormControl,
   FormControlLabel,
   InputAdornment,
-  InputLabel,
   MenuItem,
   Radio,
   RadioGroup,
@@ -10,7 +9,7 @@ import {
   TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import React from 'react';
+import React, { useState } from 'react';
 import { Iqa } from '../Configs/QA';
 
 const useStyles = makeStyles(() => ({
@@ -59,27 +58,26 @@ const useStyles = makeStyles(() => ({
 interface IAnsw {
   answ: Iqa;
   id: number;
-  userValues: [];
+  userValue: string;
+  setVal: (value: string) => void;
 }
 
 const RadioAnsw = (props: IAnsw) => {
   const classes = useStyles();
-  const [value, setValue] = React.useState('');
+  const [dop, setDop] = useState(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value);
+  const handleChange = (value: any) => {
+    props.setVal(value);
+    if (value === 'Да') setDop(true);
+    if (value === 'Нет') setDop(false);
   };
 
-  const handleChangeSelect = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setValue(event.target.value as string);
-  };
-
-  return props.answ.answers && props.answ.answers?.length > 4 ? (
+  return props.answ.answers.length > 3 ? (
     <div className={classes.cont}>
       <FormControl fullWidth style={{ alignItems: 'center' }}>
         <Select
-          value={value}
-          onChange={handleChangeSelect}
+          value={props.userValue}
+          onChange={(e) => handleChange(e.target.value)}
           className={classes.select}
           variant='outlined'
         >
@@ -88,8 +86,12 @@ const RadioAnsw = (props: IAnsw) => {
           })}
         </Select>
       </FormControl>
-      {value === 'Другое' && (
-        <TextField variant='outlined' className={classes.text} />
+      {props.userValue === 'Другое' && (
+        <TextField
+          variant='outlined'
+          onChange={(e) => handleChange(e.target.value)}
+          className={classes.text}
+        />
       )}
     </div>
   ) : (
@@ -98,8 +100,8 @@ const RadioAnsw = (props: IAnsw) => {
         <RadioGroup
           name={props.answ.title}
           className={classes.radioContainer}
-          value={value}
-          onChange={handleChange}
+          value={props.userValue}
+          onChange={(e) => handleChange(e.target.value)}
         >
           {props.answ.answers?.map((answ) => (
             <FormControlLabel
@@ -112,8 +114,12 @@ const RadioAnsw = (props: IAnsw) => {
           ))}
         </RadioGroup>
       </FormControl>
-      {value === 'Другое' && (
-        <TextField variant='outlined' className={classes.text} />
+      {dop && props.id === 20 && (
+        <TextField
+          variant='outlined'
+          className={classes.text}
+          onChange={(e) => handleChange(e.target.value)}
+        />
       )}
     </div>
   );
@@ -122,25 +128,37 @@ const RadioAnsw = (props: IAnsw) => {
 const TextAnsw = (props: IAnsw) => {
   const classes = useStyles();
 
+  const handleChange = (value: any) => {
+    props.setVal(value);
+  };
+
+  const min = props.answ.answers[0];
+  const max = props.answ.answers[1];
+
   return props.answ.type === 'number' ? (
     <TextField
       variant='outlined'
       type='number'
       InputProps={{
         inputProps: {
-          min: props.answ.answers && props.answ.answers[0],
-          max: props.answ.answers && props.answ.answers[1],
+          min: min,
+          max: max,
         },
         endAdornment: (
           <InputAdornment position='end'>{props.answ.label}</InputAdornment>
         ),
       }}
-      error={true}
+      error={props.userValue < min || props.userValue > max}
+      onChange={(e) => handleChange(e.target.value)}
       className={classes.number}
       defaultValue={props.answ.answers && props.answ.answers[0]}
     />
   ) : (
-    <TextField variant='outlined' className={classes.text} />
+    <TextField
+      variant='outlined'
+      onChange={(e) => handleChange(e.target.value)}
+      className={classes.text}
+    />
   );
 };
 
@@ -151,13 +169,15 @@ export const Answers = (props: IAnsw) => {
         <RadioAnsw
           answ={props.answ}
           id={props.id}
-          userValues={props.userValues}
+          userValue={props.userValue}
+          setVal={props.setVal}
         />
       ) : (
         <TextAnsw
           answ={props.answ}
           id={props.id}
-          userValues={props.userValues}
+          userValue={props.userValue}
+          setVal={props.setVal}
         />
       )}
     </div>

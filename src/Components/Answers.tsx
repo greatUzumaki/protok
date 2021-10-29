@@ -67,6 +67,7 @@ const RadioAnsw = (props: IAnsw) => {
   const [dop, setDop] = useState(false);
 
   const handleChange = (value: any) => {
+    if (value === 'Будет отсутствовать') value = 'Нет';
     props.setVal(value);
     if (value === 'Да') setDop(true);
     if (value === 'Нет') setDop(false);

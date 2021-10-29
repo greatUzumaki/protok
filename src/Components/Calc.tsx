@@ -17,6 +17,7 @@ import * as XLSX from 'xlsx';
 import { secondColor } from '../Configs/Colors';
 import { questionAnswer } from '../Configs/QA';
 import { Answers } from './Answers';
+import Price from '../Configs/Price.json';
 
 const useStyles = makeStyles(() => ({
   rootConatiner: {
@@ -213,6 +214,16 @@ export const Calc = () => {
     FileSaver.saveAs(data, fileName + fileExtension);
   };
 
+  const getPrice = () => {
+    let prices: number[] = [];
+    let res = 0;
+    Price.forEach((item) => prices.push(item.Цена));
+    for (let i = 0; i < Price.length; i++) {
+      res += prices[i];
+    }
+    return res;
+  };
+
   return finish ? (
     <Container>
       <div className={classes.root2}>
@@ -223,10 +234,13 @@ export const Calc = () => {
           <Typography align='center' className={classes.desc}>
             Формируем проект, в ближайшее время с Вами свяжется наш менеджер
           </Typography>
+          <Typography align='center' className={classes.desc}>
+            Итоговая цена: {getPrice()} руб.
+          </Typography>
         </Box>
         <Box className={classes.buttons}>
           <Button className={classes.button} onClick={repeat}>
-            Заполнить заного
+            Заполнить заново
           </Button>
           <Button className={classes.button} onClick={exportToExcel}>
             Скачать документ
